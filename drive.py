@@ -63,11 +63,10 @@ def telemetry(sid, data):
         imgString = data["image"]
         image = Image.open(BytesIO(base64.b64decode(imgString)))
         image_array = np.asarray(image)
+
+        commands = float(pred_model.predict(image_array[None, :, :, :], batch_size=1))
+        steering_angle = commands[0]
         
-        # MODIFIED: model uses left and right half (flipped) of image to exploit
-        # symmetry. Total angle is average of both.
-        steering_angle = float(pred_model.predict(image_array[None, :, :, :], batch_size=1))
-                         
         throttle = controller.update(float(speed))
 
         print(steering_angle, throttle)

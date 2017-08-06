@@ -27,7 +27,7 @@ class GNet(object):
         self._model.add(Cropping2D(cropping=((50,20), (0,0)), input_shape=(160,320,3)))
         
         def normalize(pixel):
-            return ((pixel/255.0)-0.5)
+            return ((pixel/8.0)-16.0)
         self._model.add(Lambda(normalize))        
         
         nn_arch.build(self._model)

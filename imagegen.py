@@ -21,8 +21,8 @@ class ImageGenerator(object):
         ''' Initialize samples with all files from .csv.
         '''
         self._samples = []
+        self._correction = 0.09
         self._batch_size = batch_size
-        self._PP_factor = 2 # Preprocessing factor
         self._cameras = ['center']
         for set in sets:
             with open(path + '/' + set + '/driving_log.csv') as csvfile:
@@ -38,51 +38,47 @@ class ImageGenerator(object):
     def valid_data_gen(self, batch_size=32):
         yield from self._data_gen(self._valid_samples)
     
+    def _read_image(self, file):
+        name = './data/' + '/'.join(file.replace('\\', '/').split('/')[-3:])
+        image = cv2.imread(name)
+        return cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    
     def _data_gen(self, samples):
         ''' Generator to return batches of training / validation data
         '''
         batch_size = self._batch_size
         num_samples = len(samples)
-        num_samples_scaled = num_samples * self._PP_factor * len(self._cameras)
-        batch_size_scaled = int(batch_size / (self._PP_factor * len(self._cameras)))
         while 1: # Loop forever so the generator never terminates
             shuffle(samples)
-            for offset in range(0, num_samples, batch_size_scaled):
-                batch_samples = samples[offset:offset+batch_size_scaled]             
-                images = []
-                angles = []
-                for batch_sample in batch_samples:
-                    for img_index,position in zip(range(len(self._cameras)), self._cameras):  
-                        name = './data/' + '/'.join(batch_sample[img_index].replace('\\', '/').split('/')[-3:])
-                        image = cv2.imread(name)
-                        angle = float(batch_sample[3])
-                        
-                        img_set, angle_set = self._preprocess_image(image, position, angle)
-                        for img_pp, ang_pp in zip(img_set, angle_set):
-                            images.append(img_pp)
-                            angles.append(ang_pp)
-    
-                X_train = np.array(images)
-                y_train = np.array(angles)
+            images = []
+            cmds = []
+            for i in range(batch_size):
+                #central camera
+                image = self._read_image(samples[i][0])
+                angle = float(samples[i][3])
+                throttle = float(samples[i][4])
+                br = float(samples[i][5])
+                images.append(image)
+                cmds.append([angle, throttle, br])
+                #flipped central camera
+                image = np.fliplr(image)
+                angle = -angle
+                images.append(image)
+                cmds.append([angle, throttle, br])
+                #left camera
+                image = self._read_image(samples[i][1])
+                angle = float(samples[i][3]) + self._correction
+                images.append(image)
+                cmds.append([angle, throttle, br])
+                #right camera
+                image = self._read_image(samples[i][2])
+                angle = float(samples[i][3]) - self._correction
+                images.append(image)
+                cmds.append([angle, throttle, br])
+            X_train = np.array(images)
+            y_train = np.array(cmds)
 
-                yield shuffle(X_train, y_train)
-    
-    def _preprocess_image(self, image, camera_position='center', angle=0):
-        ''' Preprocess images from driving simulator to use with model.
-            Image is split in left and right half (flipped).
-            Steering angle for left and right are corrected with geometry offset
-        '''
-        image_set = [image, np.fliplr(image)]
-    
-        if camera_position == 'center':
-            a_off = 0
-        elif camera_position == 'left':
-            a_off = 0.2
-        elif camera_position == 'right':
-            a_off = -0.2
-            
-        angle_set = [(angle+a_off), -(angle+a_off)]
-        return image_set, angle_set
+            yield shuffle(X_train, y_train)
     
     def train_data_len(self):
         return len(self._train_samples) * self._PP_factor * len(self._cameras) / self._batch_size
