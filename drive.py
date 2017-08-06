@@ -64,8 +64,8 @@ def telemetry(sid, data):
         image = Image.open(BytesIO(base64.b64decode(imgString)))
         image_array = np.asarray(image)
 
-        commands = float(pred_model.predict(image_array[None, :, :, :], batch_size=1))
-        steering_angle = commands[0]
+        commands = pred_model.predict(image_array[None, :, :, :], batch_size=1)
+        steering_angle = float(commands[0,0])
         
         throttle = controller.update(float(speed))
 

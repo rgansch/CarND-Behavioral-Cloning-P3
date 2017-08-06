@@ -27,7 +27,7 @@ class GNet(object):
         self._model.add(Cropping2D(cropping=((50,20), (0,0)), input_shape=(160,320,3)))
         
         def normalize(pixel):
-            return ((pixel/8.0)-16.0)
+            return ((pixel/32.0)-64.0)
         self._model.add(Lambda(normalize))        
         
         nn_arch.build(self._model)
@@ -47,7 +47,7 @@ class GNet(object):
                                   steps_per_epoch = train_len, \
                                   validation_data = valid_gen, \
                                   validation_steps = valid_len, \
-                                  epochs=3)
+                                  epochs=5)
         pass
     
     def save(self):
