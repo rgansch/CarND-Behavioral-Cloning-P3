@@ -5,9 +5,8 @@ Created on Sun Aug  6 12:43:47 2017
 @author: gansc
 """
 
-from keras.layers.core import Dense, Activation, Flatten, Dropout
-from keras.layers.convolutional import Conv2D, Convolution2D, ZeroPadding2D
-from keras.layers.pooling import MaxPooling2D
+from keras.layers import Flatten, Dense, Conv2D, MaxPooling2D, Dropout, SpatialDropout2D
+from keras.layers.advanced_activations import LeakyReLU
 
 def build(model):
     ''' Add the LeNet architecture to Keras model
