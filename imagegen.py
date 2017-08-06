@@ -1,5 +1,9 @@
-''' Image generator for use with model training.
-'''
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Aug  6 12:43:47 2017
+
+@author: gansc
+"""
 
 import numpy as np
 import csv
@@ -13,10 +17,11 @@ class ImageGenerator(object):
         Images from left and right camera are returned with a 
         corrected steering angle
     '''
-    def __init__(self, path, sets, train_val_split=0.2):
+    def __init__(self, path, sets, batch_size=32, train_val_split=0.2):
         ''' Initialize samples with all files from .csv.
         '''
         self._samples = []
+        self._batch_size = batch_size
         self._PP_factor = 2 # Preprocessing factor
         self._cameras = ['center','left','right']
         for set in sets:
@@ -27,15 +32,16 @@ class ImageGenerator(object):
        
         self._train_samples, self._valid_samples = train_test_split(self._samples, test_size=train_val_split)
     
-    def train_data_gen(self, batch_size=32):
-        yield from self._data_gen(self._train_samples, batch_size)
+    def train_data_gen(self):
+        yield from self._data_gen(self._train_samples)
         
     def valid_data_gen(self, batch_size=32):
-        yield from self._data_gen(self._valid_samples, batch_size)
+        yield from self._data_gen(self._valid_samples)
     
-    def _data_gen(self, samples, batch_size=32):
+    def _data_gen(self, samples):
         ''' Generator to return batches of training / validation data
         '''
+        batch_size = self._batch_size
         num_samples = len(samples)
         num_samples_scaled = num_samples * self._PP_factor * len(self._cameras)
         batch_size_scaled = int(batch_size / (self._PP_factor * len(self._cameras)))
@@ -79,18 +85,18 @@ class ImageGenerator(object):
         return image_set, angle_set
     
     def train_data_len(self):
-        return len(self._train_samples) * self._PP_factor * len(self._cameras)
+        return len(self._train_samples) * self._PP_factor * len(self._cameras) / self._batch_size
     
     def valid_data_len(self):
-        return len(self._valid_samples) * self._PP_factor * len(self._cameras)
+        return len(self._valid_samples) * self._PP_factor * len(self._cameras) / self._batch_size
    
 #############################
     
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
     
-    img_gen = ImageGenerator(r'.\data', ['set1'])
-    train_gen = img_gen.train_data_gen(batch_size=6)
+    img_gen = ImageGenerator(r'.\data', ['set1'], batch_size=6)
+    train_gen = img_gen.train_data_gen()
     img,angle = next(train_gen)
     
     for i in img:

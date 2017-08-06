@@ -1,15 +1,17 @@
-'''
-Neural network model to train driving with the driving simulator from CarND P3
-'''
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Aug  6 12:43:47 2017
+
+@author: gansc
+"""
 
 from keras.models import Sequential
-from keras.layers.core import Dense, Activation, Flatten, Dropout
-from keras.layers.convolutional import Convolution2D
-from keras.layers.pooling import MaxPooling2D
+from keras.layers.core import Flatten
 from keras.layers import Cropping2D, Lambda
 import numpy as np
 
 from imagegen import ImageGenerator
+import vgg_arch
 
 class GNet(object):
     def __init__(self):
@@ -25,8 +27,10 @@ class GNet(object):
         self._model.add(Cropping2D(cropping=((50,20), (0,0)), input_shape=(160,160,3)))
         self._model.add(Lambda(lambda x: (x/255.0)-0.5))        
         
-        self._model.add(Flatten())
-        self._model.add(Dense(1))
+        vgg_arch.build(self._model)
+        
+        #self._model.add(Flatten())
+        #self._model.add(Dense(1))
         
         self._model.compile(loss='mse', optimizer='adam')
         
@@ -39,21 +43,20 @@ class GNet(object):
         #model.add(Activation('relu'))
         #model.add(Dense(5))
         #model.add(Activation('softmax'))
-        pass
     
-    def train(self, train_path):
+    def train(self, train_path, sets):
         ''' Train the model with images in train_path '''
-        img_gen = ImageGenerator(train_path, train_val_split = 0.2)
+        img_gen = ImageGenerator(train_path, sets, train_val_split = 0.2)
         train_gen = img_gen.train_data_gen()
         train_len = img_gen.train_data_len()
         valid_gen = img_gen.valid_data_gen()
         valid_len = img_gen.valid_data_len()
         
         self._model.fit_generator(train_gen, \
-                                  samples_per_epoch = train_len, \
+                                  steps_per_epoch = train_len, \
                                   validation_data = valid_gen, \
-                                  nb_val_samples = valid_len, \
-                                  nb_epoch=3)
+                                  validation_steps = valid_len, \
+                                  epochs=3)
         pass
     
     def save(self):
