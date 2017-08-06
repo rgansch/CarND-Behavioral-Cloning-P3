@@ -11,7 +11,7 @@ from keras.layers import Cropping2D, Lambda
 import numpy as np
 
 from imagegen import ImageGenerator
-import vgg_arch
+import nn_arch
 
 class GNet(object):
     def __init__(self):
@@ -27,7 +27,7 @@ class GNet(object):
         self._model.add(Cropping2D(cropping=((50,20), (0,0)), input_shape=(160,160,3)))
         self._model.add(Lambda(lambda x: (x/255.0)-0.5))        
         
-        vgg_arch.build(self._model)
+        nn_arch.build(self._model)
         
         #self._model.add(Flatten())
         #self._model.add(Dense(1))
@@ -74,5 +74,5 @@ class GNet(object):
 if __name__ == '__main__':
     nn = GNet()
     #nn.load()
-    nn.train(r'.\data', ['set1', 'set2', 'set3', 'set4', 'set5', 'set6', 'set7', 'set8'])
+    nn.train(r'data', ['set1', 'set2', 'set3', 'set4', 'set5', 'set6', 'set7', 'set8'])
     nn.save()
