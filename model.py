@@ -25,24 +25,15 @@ class GNet(object):
         
         # Image preprocessing
         self._model.add(Cropping2D(cropping=((50,20), (0,0)), input_shape=(160,160,3)))
-        self._model.add(Lambda(lambda x: (x/255.0)-0.5))        
+        
+        def normalize(pixel):
+            return ((pixel/255.0)-0.5)
+        self._model.add(Lambda(normalize))        
         
         nn_arch.build(self._model)
         
-        #self._model.add(Flatten())
-        #self._model.add(Dense(1))
-        
         self._model.compile(loss='mse', optimizer='adam')
-        
-        #model.add(Convolution2D(32, 3, 3))
-        #model.add(MaxPooling2D((2, 2)))
-        #model.add(Dropout(0.5))
-        #model.add(Activation('relu'))
-        #model.add(Flatten())
-        #model.add(Dense(128))
-        #model.add(Activation('relu'))
-        #model.add(Dense(5))
-        #model.add(Activation('softmax'))
+        return self._model
     
     def train(self, train_path, sets):
         ''' Train the model with images in train_path '''

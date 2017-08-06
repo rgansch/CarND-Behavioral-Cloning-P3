@@ -54,29 +54,29 @@ def build(model):
     model.add(MaxPooling2D((2, 2), strides=(2, 2)))    
 
     # Layer Cluster - 4
-    model.add(ZeroPadding2D(padding=(1, 1)))
-    model.add(Conv2D(512, (3, 3),
-                  activation='relu',
-                  padding='same'))
-    model.add(ZeroPadding2D(padding=(1, 1)))
-    model.add(Conv2D(512, (3, 3),
-                  activation='relu',
-                  padding='same'))
-    model.add(ZeroPadding2D(padding=(1, 1)))
-    model.add(Conv2D(512, (3, 3),
-                  activation='relu',
-                  padding='same'))
-    model.add(ZeroPadding2D(padding=(1, 1)))
-    model.add(Conv2D(512, (3, 3),
-                  activation='relu',
-                  padding='same'))
-    model.add(MaxPooling2D((2, 2), strides=(2, 2))) 
+#    model.add(ZeroPadding2D(padding=(1, 1)))
+#    model.add(Conv2D(512, (3, 3),
+#                  activation='relu',
+#                  padding='same'))
+#    model.add(ZeroPadding2D(padding=(1, 1)))
+#    model.add(Conv2D(512, (3, 3),
+#                  activation='relu',
+#                  padding='same'))
+#    model.add(ZeroPadding2D(padding=(1, 1)))
+#    model.add(Conv2D(512, (3, 3),
+#                  activation='relu',
+#                  padding='same'))
+#    model.add(ZeroPadding2D(padding=(1, 1)))
+#    model.add(Conv2D(512, (3, 3),
+#                  activation='relu',
+#                  padding='same'))
+#    model.add(MaxPooling2D((2, 2), strides=(2, 2))) 
 
     # Layer Cluster - 5 - Output Layer
     model.add(Flatten())
-    model.add(Dense(4096, activation='relu'))
+    model.add(Dense(2048, activation='relu'))
     model.add(Dropout(0.5))
-    model.add(Dense(4096, activation='relu'))
+    model.add(Dense(2048, activation='relu'))
     model.add(Dropout(0.5))
-    model.add(Dense(512, activation='relu'))
+    model.add(Dense(256, activation='relu'))
     model.add(Dense(1, activation='relu'))
