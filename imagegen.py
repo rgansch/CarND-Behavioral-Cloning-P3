@@ -23,7 +23,7 @@ class ImageGenerator(object):
         self._samples = []
         self._batch_size = batch_size
         self._PP_factor = 2 # Preprocessing factor
-        self._cameras = ['center','left','right']
+        self._cameras = ['center']
         for set in sets:
             with open(path + '/' + set + '/driving_log.csv') as csvfile:
                 reader = csv.reader(csvfile)
