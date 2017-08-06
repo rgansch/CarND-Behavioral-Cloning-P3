@@ -53,28 +53,26 @@ class ImageGenerator(object):
             images = []
             cmds = []
             for i in range(batch_size):
-                #central camera
-                image = self._read_image(samples[i][0])
-                angle = float(samples[i][3])
-                throttle = float(samples[i][4])
-                br = float(samples[i][5])
-                images.append(image)
-                cmds.append([angle, throttle, br])
-                #flipped central camera
-                image = np.fliplr(image)
-                angle = -angle
-                images.append(image)
-                cmds.append([angle, throttle, br])
-                #left camera
-                image = self._read_image(samples[i][1])
-                angle = float(samples[i][3]) + self._correction
-                images.append(image)
-                cmds.append([angle, throttle, br])
-                #right camera
-                image = self._read_image(samples[i][2])
-                angle = float(samples[i][3]) - self._correction
-                images.append(image)
-                cmds.append([angle, throttle, br])
+                image_center = self._read_image(samples[i][0])
+                angle_center, throttle, brake = [float(s) for s in samples[i][3:6]]
+                images.append(image_center)
+                cmds.append([angle_center, throttle, brake])
+                
+                image_center_flipped = np.fliplr(image_center)
+                angle_center_flipped = -angle_center
+                images.append(image_center_flipped)
+                cmds.append([angle_center_flipped, throttle, brake])
+                
+                image_left = self._read_image(samples[i][1])
+                angle_left = angle_center + self._correction
+                images.append(image_left)
+                cmds.append([angle_left, throttle, brake])
+                
+                image_right = self._read_image(samples[i][2])
+                angle_right = angle_center - self._correction
+                images.append(image_right)
+                cmds.append([angle_right, throttle, brake])
+                
             X_train = np.array(images)
             y_train = np.array(cmds)
 
@@ -91,7 +89,7 @@ class ImageGenerator(object):
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
     
-    img_gen = ImageGenerator(r'.\data', ['set1'], batch_size=6)
+    img_gen = ImageGenerator(r'.\data', ['set1'], batch_size=1)
     train_gen = img_gen.train_data_gen()
     img,angle = next(train_gen)
     

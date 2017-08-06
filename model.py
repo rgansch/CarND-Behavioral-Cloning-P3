@@ -6,8 +6,6 @@ Created on Sun Aug  6 12:43:47 2017
 """
 
 from keras.models import Sequential
-from keras.layers.core import Flatten
-from keras.layers import Cropping2D, Lambda
 import numpy as np
 
 from imagegen import ImageGenerator
@@ -22,14 +20,7 @@ class GNet(object):
     def _build_model(self):
         ''' Create the Keras neural network model '''
         self._model = Sequential()
-        
-        # Image preprocessing
-        self._model.add(Cropping2D(cropping=((50,20), (0,0)), input_shape=(160,320,3)))
-        
-        def normalize(pixel):
-            return ((pixel/8.0)-16.0)
-        self._model.add(Lambda(normalize))        
-        
+
         nn_arch.build(self._model)
         
         self._model.compile(loss='mse', optimizer='adam')
@@ -48,7 +39,6 @@ class GNet(object):
                                   validation_data = valid_gen, \
                                   validation_steps = valid_len, \
                                   epochs=5)
-        pass
     
     def save(self):
         ''' Save the model (.h5)
@@ -65,5 +55,5 @@ class GNet(object):
 if __name__ == '__main__':
     nn = GNet()
     #nn.load()
-    nn.train(r'data', ['set1', 'set2', 'set3', 'set4', 'set5', 'set6', 'set7', 'set8'])
+    nn.train(r'data', ['set1', 'set2', 'set3', 'set4', 'set5', 'set6', 'set7', 'set8', 'set9'])
     nn.save()

@@ -46,7 +46,7 @@ class SimplePIController:
 
 
 controller = SimplePIController(0.1, 0.002)
-set_speed = 29
+set_speed = 25
 controller.set_desired(set_speed)
 
 
@@ -125,7 +125,6 @@ if __name__ == '__main__':
 
     pred_model = model.GNet()._model
     pred_model.load_weights(args.pred_model)
-    #model = load_model(args.model)
 
     if args.image_folder != '':
         print("Creating image folder at {}".format(args.image_folder))
