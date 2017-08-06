@@ -81,10 +81,10 @@ class ImageGenerator(object):
             yield shuffle(X_train, y_train)
     
     def train_data_len(self):
-        return len(self._train_samples) * self._PP_factor * len(self._cameras) / self._batch_size
+        return len(self._train_samples / self._batch_size)
     
     def valid_data_len(self):
-        return len(self._valid_samples) * self._PP_factor * len(self._cameras) / self._batch_size
+        return len(self._valid_samples / self._batch_size)
    
 #############################
     
