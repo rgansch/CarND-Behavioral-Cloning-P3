@@ -72,7 +72,7 @@ class ImageGenerator(object):
             Image is split in left and right half (flipped).
             Steering angle for left and right are corrected with geometry offset
         '''
-        image_set = [image[:, 0:160], np.fliplr(image[:, 160:])]
+        image_set = [image, np.fliplr(image)]
     
         if camera_position == 'center':
             a_off = 0

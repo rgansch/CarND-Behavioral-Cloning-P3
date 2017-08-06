@@ -24,7 +24,7 @@ class GNet(object):
         self._model = Sequential()
         
         # Image preprocessing
-        self._model.add(Cropping2D(cropping=((50,20), (0,0)), input_shape=(160,160,3)))
+        self._model.add(Cropping2D(cropping=((50,20), (0,0)), input_shape=(160,320,3)))
         
         def normalize(pixel):
             return ((pixel/255.0)-0.5)

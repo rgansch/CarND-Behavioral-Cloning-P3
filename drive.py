@@ -46,7 +46,7 @@ class SimplePIController:
 
 
 controller = SimplePIController(0.1, 0.002)
-set_speed = 15
+set_speed = 29
 controller.set_desired(set_speed)
 
 
@@ -66,9 +66,7 @@ def telemetry(sid, data):
         
         # MODIFIED: model uses left and right half (flipped) of image to exploit
         # symmetry. Total angle is average of both.
-        steering_angle_1 = float(pred_model.predict(image_array[None, :, 0:160, :], batch_size=1))
-        steering_angle_2 = float(pred_model.predict(np.fliplr(image_array[None, :, 160:, :]), batch_size=1))
-        steering_angle = (steering_angle_1-steering_angle_2)/2
+        steering_angle = float(pred_model.predict(image_array[None, :, :, :], batch_size=1))
                          
         throttle = controller.update(float(speed))
 
